@@ -1,8 +1,10 @@
 package com.pierre.nockydelivery.delivery.traking.domain.model;
 
+import com.pierre.nockydelivery.delivery.traking.domain.exception.DomainException;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +68,7 @@ public class Delivery {
     public void changeItemQuantity(UUID itemId, int quantity) {
       Item  item = getItems().stream()
                 .filter(i -> i.getId().equals(itemId))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("Item not found"));
+                .findFirst().orElseThrow(() -> new DomainException("Item not found"));
 
         calculateTotalItems();
     }
@@ -76,7 +78,19 @@ public class Delivery {
         calculateTotalItems();
     }
 
+    public void editPreparationDetails(PreparationDetails details) {
+        verifyIfCanBeEdited();
+        setSender(details.getSender());
+        setRecipient(details.getRecipient());
+        setDistanceFee(details.getDistanceFee());
+        setCourierPayout(details.getCourierPayout());
+
+        setExpectedDeliveryAt(OffsetDateTime.now().plus(details.getExpectedDeliveryTime()));
+        setTotalCost(this.getDistanceFee().add(this.getCourierPayout()));
+    }
+
     public void place() {
+        verifyIfCanBePlaced();
         this.setStatus(DeliveryStatus.WAITING_FOR_COURIER);
         this.setPlacedAt(OffsetDateTime.now());
     }
@@ -85,7 +99,11 @@ public class Delivery {
         this.setCourierId(courierId);
         this.setStatus(DeliveryStatus.IN_TRANSIT);
         this.setAssignedAt(OffsetDateTime.now());
+    }
 
+    public void markAsDelivered() {
+        this.setStatus(DeliveryStatus.DELIVERY);
+        this.setFulfilledAt(OffsetDateTime.now());
     }
 
     public List<Item> getItems() {
@@ -93,7 +111,37 @@ public class Delivery {
     }
 
     private void calculateTotalItems() {
-    int totalItems =   items.stream().mapToInt(Item::getQuantity).sum();
-    setTotalItems(totalItems);
+        int totalItems = getItems().stream().mapToInt(Item::getQuantity).sum();
+        setTotalItems(totalItems);
     }
-}
+    private void verifyIfCanBePlaced() {
+        if (!isFilled()) {
+            throw new DomainException();
+        }
+        if (!getStatus().equals(DeliveryStatus.DRAFT)) {
+            throw new DomainException();
+        }
+    }
+    private void verifyIfCanBeEdited() {
+        if (!getStatus().equals(DeliveryStatus.DRAFT)) {
+            throw new DomainException();
+        }
+    }
+
+    private boolean isFilled() {
+        return this.getSender() != null
+                && this.getRecipient() != null
+                && this.getTotalCost() != null;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class PreparationDetails {
+        private ContactPoint sender;
+        private ContactPoint recipient;
+        private BigDecimal distanceFee;
+        private BigDecimal courierPayout;
+        private Duration expectedDeliveryTime;
+    }
+    }
