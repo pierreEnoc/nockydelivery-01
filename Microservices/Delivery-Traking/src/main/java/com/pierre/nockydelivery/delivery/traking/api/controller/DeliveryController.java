@@ -1,8 +1,10 @@
 package com.pierre.nockydelivery.delivery.traking.api.controller;
 
+import com.pierre.nockydelivery.delivery.traking.domain.model.CourierIdInput;
 import com.pierre.nockydelivery.delivery.traking.domain.model.Delivery;
 import com.pierre.nockydelivery.delivery.traking.domain.model.DeliveryInput;
 import com.pierre.nockydelivery.delivery.traking.domain.repository.DeliveryRepository;
+import com.pierre.nockydelivery.delivery.traking.domain.service.DeliveryCheckpointService;
 import com.pierre.nockydelivery.delivery.traking.domain.service.DeliveryPreparationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class DeliveryController {
 
     private final DeliveryPreparationService deliveryPreparationService;
     private final DeliveryRepository deliveryRepository;
+    private final DeliveryCheckpointService deliveryCheckpointService;
     /**
      * Endpoint to draft a new delivery.
      *
@@ -53,5 +56,20 @@ public class DeliveryController {
     public Delivery findById(@PathVariable UUID deliveryId) {
         return deliveryRepository.findById(deliveryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+    @PostMapping("/{deliveryId}/completion")
+    public void complete(@PathVariable UUID deliveryId) {
+        deliveryCheckpointService.complete(deliveryId);
+    }
+
+    @PostMapping("/{deliveryId}/placement")
+    public void place(@PathVariable UUID deliveryId) {
+        deliveryCheckpointService.place(deliveryId);
+    }
+
+    @PostMapping("/{deliveryId}/pickups")
+    public void pickup(@PathVariable UUID deliveryId,
+                       @Valid @RequestBody CourierIdInput input) {
+        deliveryCheckpointService.pickUp(deliveryId, input.getCourierId());
     }
 }
