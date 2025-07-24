@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.util.UUID;
 
@@ -16,6 +17,9 @@ import java.util.UUID;
 public class DeliveryPreparationService {
 
     private final DeliveryRepository deliveryRepository;
+
+    private final DeliveryTimeEstimationService deliveryTimeEstimationService;
+    private final CourierPayoutCalculationService courierPayoutCalculationService;
 
     @Transactional
     public Delivery draft(DeliveryInput input) {
@@ -55,17 +59,16 @@ public class DeliveryPreparationService {
                 .phone(recipientInpunt.getPhone())
                 .build();
 
-        Duration expectedDeliveryTime = Duration.ofHours(3);
-        BigDecimal distanceFee = new BigDecimal("10.00");
+        DeliveryEstimate estimate =  deliveryTimeEstimationService.estimate(sender, recipient);
+        BigDecimal calculatedPayout = courierPayoutCalculationService.calculatePayout(estimate.getDistanceInKm());
 
-        BigDecimal payout = new BigDecimal("10.00");
-
+        BigDecimal distanceFee = calculateDistanceFee(estimate.getDistanceInKm());
 
         var preparationsDetails = Delivery.PreparationDetails.builder()
                 .recipient(recipient)
                 .sender(sender)
-                .expectedDeliveryTime(expectedDeliveryTime)
-                .courierPayout(payout)
+                .expectedDeliveryTime(estimate.getEstimatedTime())
+                .courierPayout(calculatedPayout)
                 .distanceFee(distanceFee)
                 .build();
 
@@ -75,5 +78,9 @@ public class DeliveryPreparationService {
            delivery.addItem(itemInput.getName(), itemInput.getQuantity());
         }
     }
-
+    private BigDecimal calculateDistanceFee(Double distanceInKm) {
+        return new BigDecimal("3")
+                .multiply(new BigDecimal(distanceInKm))
+                .setScale(2, RoundingMode.HALF_EVEN);
+    }
 }
