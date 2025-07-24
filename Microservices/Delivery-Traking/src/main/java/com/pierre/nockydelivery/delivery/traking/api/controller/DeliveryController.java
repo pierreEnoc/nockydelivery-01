@@ -2,11 +2,16 @@ package com.pierre.nockydelivery.delivery.traking.api.controller;
 
 import com.pierre.nockydelivery.delivery.traking.domain.model.Delivery;
 import com.pierre.nockydelivery.delivery.traking.domain.model.DeliveryInput;
+import com.pierre.nockydelivery.delivery.traking.domain.repository.DeliveryRepository;
 import com.pierre.nockydelivery.delivery.traking.domain.service.DeliveryPreparationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -16,7 +21,13 @@ import java.util.UUID;
 public class DeliveryController {
 
     private final DeliveryPreparationService deliveryPreparationService;
-
+    private final DeliveryRepository deliveryRepository;
+    /**
+     * Endpoint to draft a new delivery.
+     *
+     * @param input the delivery input data
+     * @return the created Delivery object
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Delivery draft(@RequestBody @Valid DeliveryInput input) {
@@ -30,5 +41,17 @@ public class DeliveryController {
                          @RequestBody @Valid DeliveryInput input) {
 
         return deliveryPreparationService.edit(deliveryId, input);
+    }
+
+    @GetMapping
+    public PagedModel<Delivery> finaAll(@PageableDefault Pageable pageable) {
+        return  new PagedModel<>(
+            deliveryRepository.findAll(pageable));
+    }
+
+    @GetMapping("/{deliveryId}")
+    public Delivery findById(@PathVariable UUID deliveryId) {
+        return deliveryRepository.findById(deliveryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 }
