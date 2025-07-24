@@ -1,8 +1,11 @@
 package com.pierre.nockydelivery.courier.management.api.controller;
 
 import com.pierre.nockydelivery.courier.management.api.model.CourierInput;
+import com.pierre.nockydelivery.courier.management.api.model.CourierPayoutCalculationInput;
+import com.pierre.nockydelivery.courier.management.api.model.CourierPayoutResultModel;
 import com.pierre.nockydelivery.courier.management.domain.model.Courier;
 import com.pierre.nockydelivery.courier.management.domain.repository.CourierRepository;
+import com.pierre.nockydelivery.courier.management.domain.service.CourierPayoutService;
 import com.pierre.nockydelivery.courier.management.domain.service.CourierRegistrationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +27,7 @@ public class CourierController {
     private final CourierRegistrationService courierRegistrationService;
     private final CourierRepository courierRepository;
 
-   // private final CourierPayoutService courierPayoutService;
+   private final CourierPayoutService courierPayoutService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,12 +53,12 @@ public class CourierController {
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-//    @PostMapping("/payout-calculation")
-//    public CourierPayoutResultModel calculate(
-//            @RequestBody CourierPayoutCalculationInput input) {
-//        BigDecimal payoutFee = courierPayoutService.calculate(input.getDistanceInKm());
-//        return new CourierPayoutResultModel(payoutFee);
-//    }
+    @PostMapping("/payout-calculation")
+    public CourierPayoutResultModel calculate(
+            @RequestBody CourierPayoutCalculationInput input) {
+        BigDecimal payoutFee = courierPayoutService.calculate(input.getDistanceInKm());
+        return new CourierPayoutResultModel(payoutFee);
+    }
 
 
 }
