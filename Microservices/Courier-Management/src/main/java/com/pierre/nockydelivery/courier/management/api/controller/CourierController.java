@@ -9,6 +9,7 @@ import com.pierre.nockydelivery.courier.management.domain.service.CourierPayoutS
 import com.pierre.nockydelivery.courier.management.domain.service.CourierRegistrationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/couriers")
 @RequiredArgsConstructor
@@ -44,6 +46,7 @@ public class CourierController {
 
     @GetMapping
     public PagedModel<Courier> findAll(@PageableDefault Pageable pageable) {
+        log.info("FindAll request");
         return new PagedModel<>(courierRepository.findAll(pageable));
     }
 
