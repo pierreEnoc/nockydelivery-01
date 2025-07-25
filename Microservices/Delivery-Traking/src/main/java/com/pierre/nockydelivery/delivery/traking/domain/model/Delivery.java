@@ -127,14 +127,13 @@ public class Delivery extends AbstractAggregateRoot<Delivery> {
         this.setCourierId(courierId);
         this.changeStatusTo(DeliveryStatus.IN_TRANSIT);
         this.setAssignedAt(OffsetDateTime.now());
-        new DeliveryPickUpEvent(this.assignedAt, this.getId());
+        super.registerEvent(new DeliveryPickUpEvent(this.assignedAt, this.getId()));
     }
 
     public void markAsDelivered() {
         this.changeStatusTo(DeliveryStatus.DELIVERED);
         this.setFulfilledAt(OffsetDateTime.now());
-        super.registerEvent(new
-                DeliveryFulfilledEvent(this.getFulfilledAt(), this.getId()));
+        super.registerEvent(new DeliveryFulfilledEvent(this.getFulfilledAt(), this.getId()));
     }
 
     public List<Item> getItems() {

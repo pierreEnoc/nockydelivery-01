@@ -16,6 +16,6 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.type.mapping:
-            Delivery-placed-event: com.pierre.nockydelivery.delivery.traking.domain.event.DeliveryPlacedEvent,
-            Delivery-picked-event: com.pierre.nockydelivery.delivery.traking.domain.event.DeliveryPickUpEvent,
-            Delivery-fulfilled-event: com.pierre.nockydelivery.delivery.traking.domain.event.DeliveryFulfilledEvent
+            Delivery-placed-event:com.pierre.nockydelivery.delivery.traking.domain.event.DeliveryPlacedEvent,
+            Delivery-picked-up-event:com.pierre.nockydelivery.delivery.traking.domain.event.DeliveryPickUpEvent,
+            Delivery-fulfilled-event:com.pierre.nockydelivery.delivery.traking.domain.event.DeliveryFulfilledEvent
