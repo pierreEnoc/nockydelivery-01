@@ -9,6 +9,7 @@ import com.pierre.nockydelivery.courier.management.domain.service.CourierPayoutS
 import com.pierre.nockydelivery.courier.management.domain.service.CourierRegistrationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.util.Random;
 import java.util.UUID;
 
 @Slf4j
@@ -56,9 +58,17 @@ public class CourierController {
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @SneakyThrows
     @PostMapping("/payout-calculation")
     public CourierPayoutResultModel calculate(
             @RequestBody CourierPayoutCalculationInput input) {
+        log.error("Simulating a failure in payout calculation");
+        if(Math.random()<0.1) {
+            throw new RuntimeException();
+        }
+        int millis = new Random().nextInt(200);
+        Thread.sleep(millis);
+
         BigDecimal payoutFee = courierPayoutService.calculate(input.getDistanceInKm());
         return new CourierPayoutResultModel(payoutFee);
     }
