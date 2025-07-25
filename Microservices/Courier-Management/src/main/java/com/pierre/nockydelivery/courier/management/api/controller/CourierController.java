@@ -63,7 +63,7 @@ public class CourierController {
     public CourierPayoutResultModel calculate(
             @RequestBody CourierPayoutCalculationInput input) {
         log.error("Simulating a failure in payout calculation");
-        if(Math.random()<0.1) {
+        if(Math.random()<0.5) {
             throw new RuntimeException();
         }
         int millis = new Random().nextInt(400);
