@@ -24,3 +24,10 @@ spring:
           Delivery-placed-event:com.pierre.nockydelivery.courier.management.infrastructure.event.DeliveryPlacedIntegrationEvent,
           Delivery-picked-up-event:com.fasterxml.jackson.databind.JsonNode,
           Delivery-fulfilled-event:com.pierre.nockydelivery.courier.management.infrastructure.event.DeliveryFulfilledIntegrationEvent
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${random.value}

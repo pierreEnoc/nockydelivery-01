@@ -1,4 +1,4 @@
-package com.pierre.nockydelivery.delivery.traking.infrastructure.http.client.client;
+package com.pierre.nockydelivery.delivery.traking.infrastructure.http.client;
 
 
 import org.springframework.web.bind.annotation.RequestBody;
