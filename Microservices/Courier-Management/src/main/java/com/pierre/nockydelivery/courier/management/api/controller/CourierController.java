@@ -66,7 +66,7 @@ public class CourierController {
         if(Math.random()<0.1) {
             throw new RuntimeException();
         }
-        int millis = new Random().nextInt(200);
+        int millis = new Random().nextInt(400);
         Thread.sleep(millis);
 
         BigDecimal payoutFee = courierPayoutService.calculate(input.getDistanceInKm());
