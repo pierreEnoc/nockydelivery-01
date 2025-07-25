@@ -8,6 +8,7 @@ import com.pierre.nockydelivery.delivery.traking.domain.service.DeliveryCheckpoi
 import com.pierre.nockydelivery.delivery.traking.domain.service.DeliveryPreparationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Random;
 import java.util.UUID;
 
 @RestController
@@ -46,11 +48,18 @@ public class DeliveryController {
         return deliveryPreparationService.edit(deliveryId, input);
     }
 
+    @SneakyThrows
     @GetMapping
     public PagedModel<Delivery> finaAll(@PageableDefault Pageable pageable) {
-        return  new PagedModel<>(
-            deliveryRepository.findAll(pageable));
+        if (Math.random() < 0.7) {
+            throw new RuntimeException();
+        }
+        int millis = new Random().nextInt(400);
+        Thread.sleep(millis);
+        return new PagedModel<>(deliveryRepository.findAll(pageable));
     }
+
+
 
     @GetMapping("/{deliveryId}")
     public Delivery findById(@PathVariable UUID deliveryId) {
