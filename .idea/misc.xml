@@ -6,6 +6,7 @@
       <list>
         <option value="$PROJECT_DIR$/Microservices/Delivery-Traking/pom.xml" />
         <option value="$PROJECT_DIR$/Microservices/Courier-Management/pom.xml" />
+        <option value="$PROJECT_DIR$/Microservices/Service-registry/pom.xml" />
       </list>
     </option>
   </component>
